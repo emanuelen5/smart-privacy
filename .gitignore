@@ -1,0 +1,13 @@
+# Build artifacts
+dist/
+build/
+*.zip
+
+# Dependencies
+node_modules/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

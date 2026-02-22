@@ -1,0 +1,66 @@
+#smart-privacy-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2147483647;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #1a1a2e;
+  color: #e0e0e0;
+  font: 14px/1.4 system-ui, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+#smart-privacy-bar .smart-privacy-msg {
+  flex: 1;
+  min-width: 0;
+}
+
+#smart-privacy-bar .smart-privacy-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+#smart-privacy-bar button {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+#smart-privacy-approve {
+  background: #27ae60;
+  color: #fff;
+}
+
+#smart-privacy-approve:hover {
+  background: #219a52;
+}
+
+#smart-privacy-deny {
+  background: #e74c3c;
+  color: #fff;
+}
+
+#smart-privacy-deny:hover {
+  background: #c0392b;
+}
+
+#smart-privacy-dismiss {
+  background: transparent;
+  color: #aaa;
+  font-size: 16px;
+  padding: 5px 8px;
+}
+
+#smart-privacy-dismiss:hover {
+  color: #fff;
+}
