@@ -5,7 +5,10 @@
   "scripts": {
     "build": "node build.mjs",
     "typecheck": "tsc --noEmit",
-    "watch": "tsc --noEmit --watch"
+    "watch": "tsc --noEmit --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
   },
   "repository": {
     "type": "git",
@@ -21,7 +24,9 @@
   "homepage": "https://github.com/emanuelen5/smart-privacy#readme",
   "devDependencies": {
     "@types/firefox-webext-browser": "^143.0.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "esbuild": "^0.27.3",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   }
 }

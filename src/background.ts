@@ -4,6 +4,7 @@ import type {
   BackgroundMessage,
   ShowPromptMessage,
 } from './types.js';
+import { getDomain } from './utils.js';
 
 /**
  * Background script – handles:
@@ -21,20 +22,7 @@ const tabUrls = new Map<number, string>();
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getDomain(url: string | null | undefined): string | null {
-  if (!url) return null;
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-      return parsed.hostname;
-    }
-  } catch {
-    // ignore invalid URLs
-  }
-  return null;
-}
-
-async function getStorage(): Promise<StorageData> {
+export async function getStorage(): Promise<StorageData> {
   const result = await browser.storage.local.get({
     approvedDomains: [] as string[],
     deniedDomains: [] as string[],
@@ -49,7 +37,7 @@ async function getStorage(): Promise<StorageData> {
 // Site-data cleanup
 // ---------------------------------------------------------------------------
 
-async function clearSiteData(domain: string): Promise<void> {
+export async function clearSiteData(domain: string): Promise<void> {
   try {
     await browser.browsingData.remove(
       { hostnames: [domain] },
@@ -86,7 +74,7 @@ async function clearSiteData(domain: string): Promise<void> {
  * Clear site data for `domain` if it is not approved and no other open tab
  * is still on that domain (excluding `excludeTabId` which is being closed).
  */
-async function maybeCleanupDomain(domain: string | null, excludeTabId: number): Promise<void> {
+export async function maybeCleanupDomain(domain: string | null, excludeTabId: number): Promise<void> {
   if (!domain) return;
   const data = await getStorage();
   if (data.approvedDomains.includes(domain)) return;
@@ -103,7 +91,7 @@ async function maybeCleanupDomain(domain: string | null, excludeTabId: number): 
 // Visit tracking & prompt triggering
 // ---------------------------------------------------------------------------
 
-async function triggerPrompt(tabId: number, domain: string, reason: PromptReason): Promise<void> {
+export async function triggerPrompt(tabId: number, domain: string, reason: PromptReason): Promise<void> {
   // Mark as prompted so we never ask again for this domain
   const data = await getStorage();
   if (data.promptedDomains.includes(domain)) return;
@@ -118,7 +106,7 @@ async function triggerPrompt(tabId: number, domain: string, reason: PromptReason
   }
 }
 
-async function handleVisit(tabId: number, url: string): Promise<void> {
+export async function handleVisit(tabId: number, url: string): Promise<void> {
   const domain = getDomain(url);
   if (!domain) return;
 
@@ -177,7 +165,7 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
 // Message handler (from content script and popup)
 // ---------------------------------------------------------------------------
 
-async function handleMessage(
+export async function handleMessage(
   message: BackgroundMessage,
   sender: browser.runtime.MessageSender
 ): Promise<unknown> {
