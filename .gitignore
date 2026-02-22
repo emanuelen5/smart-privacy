@@ -11,3 +11,5 @@ node_modules/
 .idea/
 *.swp
 *.swo
+
+# npm lock file (keep package-lock.json for reproducible installs)
