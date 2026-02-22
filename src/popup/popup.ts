@@ -1,11 +1,12 @@
-'use strict';
+import type { DomainStatus } from '../types.js';
 
-async function getCurrentTab() {
+async function getCurrentTab(): Promise<browser.tabs.Tab | undefined> {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   return tab;
 }
 
-function getDomain(url) {
+function getDomain(url: string | null | undefined): string | null {
+  if (!url) return null;
   try {
     const parsed = new URL(url);
     if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
@@ -17,25 +18,31 @@ function getDomain(url) {
   return null;
 }
 
-async function init() {
-  const tab = await getCurrentTab();
-  const domain = getDomain(tab && tab.url);
+function getEl<T extends HTMLElement>(id: string): T {
+  const el = document.getElementById(id);
+  if (!el) throw new Error(`Element #${id} not found`);
+  return el as T;
+}
 
-  const domainEl = document.getElementById('domain-name');
-  const badgeEl = document.getElementById('status-badge');
-  const btnApprove = document.getElementById('btn-approve');
-  const btnDeny = document.getElementById('btn-deny');
-  const btnRemove = document.getElementById('btn-remove');
+async function init(): Promise<void> {
+  const tab = await getCurrentTab();
+  const domain = getDomain(tab?.url);
+
+  const domainEl = getEl<HTMLElement>('domain-name');
+  const badgeEl = getEl<HTMLElement>('status-badge');
+  const btnApprove = getEl<HTMLButtonElement>('btn-approve');
+  const btnDeny = getEl<HTMLButtonElement>('btn-deny');
+  const btnRemove = getEl<HTMLButtonElement>('btn-remove');
 
   if (!domain) {
     domainEl.textContent = 'Not a web page';
-    document.getElementById('actions').hidden = true;
+    getEl<HTMLElement>('actions').hidden = true;
     return;
   }
 
   domainEl.textContent = domain;
 
-  const status = await browser.runtime.sendMessage({ type: 'getStatus', domain });
+  const status = await browser.runtime.sendMessage({ type: 'getStatus', domain }) as DomainStatus;
 
   if (status.approved) {
     badgeEl.textContent = 'Approved';
@@ -67,7 +74,7 @@ async function init() {
     window.close();
   });
 
-  document.getElementById('open-options').addEventListener('click', () => {
+  getEl<HTMLButtonElement>('open-options').addEventListener('click', () => {
     browser.runtime.openOptionsPage();
     window.close();
   });

@@ -1,0 +1,27 @@
+{
+  "name": "smart-privacy",
+  "version": "1.0.0",
+  "description": "A Firefox extension for **smart private browsing**.   It automatically removes cookies and site data for any site not on your approve list, and asks you once when you visit a site repeatedly or enter a password.",
+  "scripts": {
+    "build": "node build.mjs",
+    "typecheck": "tsc --noEmit",
+    "watch": "tsc --noEmit --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emanuelen5/smart-privacy.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/emanuelen5/smart-privacy/issues"
+  },
+  "homepage": "https://github.com/emanuelen5/smart-privacy#readme",
+  "devDependencies": {
+    "@types/firefox-webext-browser": "^143.0.0",
+    "esbuild": "^0.27.3",
+    "typescript": "^5.9.3"
+  }
+}

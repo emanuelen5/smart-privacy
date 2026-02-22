@@ -1,4 +1,9 @@
-'use strict';
+import type {
+  StorageData,
+  PromptReason,
+  BackgroundMessage,
+  ShowPromptMessage,
+} from './types.js';
 
 /**
  * Background script – handles:
@@ -10,13 +15,14 @@
 const VISIT_THRESHOLD = 3;
 
 /** In-memory map of tabId → current URL (updated on each navigation) */
-const tabUrls = new Map();
+const tabUrls = new Map<number, string>();
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-function getDomain(url) {
+function getDomain(url: string | null | undefined): string | null {
+  if (!url) return null;
   try {
     const parsed = new URL(url);
     if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
@@ -28,21 +34,22 @@ function getDomain(url) {
   return null;
 }
 
-async function getStorage() {
-  return browser.storage.local.get({
-    approvedDomains: [],
-    deniedDomains: [],
-    visitCounts: {},
-    promptedDomains: [],
-    visitThreshold: VISIT_THRESHOLD
+async function getStorage(): Promise<StorageData> {
+  const result = await browser.storage.local.get({
+    approvedDomains: [] as string[],
+    deniedDomains: [] as string[],
+    visitCounts: {} as Record<string, number>,
+    promptedDomains: [] as string[],
+    visitThreshold: VISIT_THRESHOLD,
   });
+  return result as StorageData;
 }
 
 // ---------------------------------------------------------------------------
 // Site-data cleanup
 // ---------------------------------------------------------------------------
 
-async function clearSiteData(domain) {
+async function clearSiteData(domain: string): Promise<void> {
   try {
     await browser.browsingData.remove(
       { hostnames: [domain] },
@@ -50,8 +57,8 @@ async function clearSiteData(domain) {
         cookies: true,
         localStorage: true,
         indexedDB: true,
-        cacheStorage: true,
-        serviceWorkers: true
+        cache: true,
+        serviceWorkers: true,
       }
     );
   } catch {
@@ -66,7 +73,7 @@ async function clearSiteData(domain) {
         await browser.cookies.remove({
           url: `${protocol}//${cookieDomain}${cookie.path}`,
           name: cookie.name,
-          storeId: cookie.storeId
+          storeId: cookie.storeId,
         });
       } catch {
         // ignore individual removal errors
@@ -79,7 +86,7 @@ async function clearSiteData(domain) {
  * Clear site data for `domain` if it is not approved and no other open tab
  * is still on that domain (excluding `excludeTabId` which is being closed).
  */
-async function maybeCleanupDomain(domain, excludeTabId) {
+async function maybeCleanupDomain(domain: string | null, excludeTabId: number): Promise<void> {
   if (!domain) return;
   const data = await getStorage();
   if (data.approvedDomains.includes(domain)) return;
@@ -96,21 +103,22 @@ async function maybeCleanupDomain(domain, excludeTabId) {
 // Visit tracking & prompt triggering
 // ---------------------------------------------------------------------------
 
-async function triggerPrompt(tabId, domain, reason) {
+async function triggerPrompt(tabId: number, domain: string, reason: PromptReason): Promise<void> {
   // Mark as prompted so we never ask again for this domain
   const data = await getStorage();
   if (data.promptedDomains.includes(domain)) return;
   data.promptedDomains.push(domain);
   await browser.storage.local.set({ promptedDomains: data.promptedDomains });
 
+  const msg: ShowPromptMessage = { type: 'showPrompt', domain, reason };
   try {
-    await browser.tabs.sendMessage(tabId, { type: 'showPrompt', domain, reason });
+    await browser.tabs.sendMessage(tabId, msg);
   } catch {
     // Content script not yet injected; it will pick up the prompt state on load
   }
 }
 
-async function handleVisit(tabId, url) {
+async function handleVisit(tabId: number, url: string): Promise<void> {
   const domain = getDomain(url);
   if (!domain) return;
 
@@ -123,7 +131,7 @@ async function handleVisit(tabId, url) {
     return;
   }
 
-  data.visitCounts[domain] = (data.visitCounts[domain] || 0) + 1;
+  data.visitCounts[domain] = (data.visitCounts[domain] ?? 0) + 1;
   await browser.storage.local.set({ visitCounts: data.visitCounts });
 
   if (data.visitCounts[domain] >= data.visitThreshold) {
@@ -169,24 +177,27 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
 // Message handler (from content script and popup)
 // ---------------------------------------------------------------------------
 
-async function handleMessage(message, sender) {
-  const senderDomain = getDomain(sender.tab && sender.tab.url);
+async function handleMessage(
+  message: BackgroundMessage,
+  sender: browser.runtime.MessageSender
+): Promise<unknown> {
+  const senderDomain = getDomain(sender.tab?.url);
 
   switch (message.type) {
     case 'getStatus': {
-      const domain = message.domain || senderDomain;
+      const domain = message.domain ?? senderDomain;
       if (!domain) return {};
       const data = await getStorage();
       return {
         approved: data.approvedDomains.includes(domain),
         denied: data.deniedDomains.includes(domain),
         prompted: data.promptedDomains.includes(domain),
-        visitCount: data.visitCounts[domain] || 0
+        visitCount: data.visitCounts[domain] ?? 0,
       };
     }
 
     case 'approve': {
-      const domain = message.domain || senderDomain;
+      const domain = message.domain ?? senderDomain;
       if (!domain) return;
       const data = await getStorage();
       if (!data.approvedDomains.includes(domain)) {
@@ -195,13 +206,13 @@ async function handleMessage(message, sender) {
       data.deniedDomains = data.deniedDomains.filter(d => d !== domain);
       await browser.storage.local.set({
         approvedDomains: data.approvedDomains,
-        deniedDomains: data.deniedDomains
+        deniedDomains: data.deniedDomains,
       });
       break;
     }
 
     case 'deny': {
-      const domain = message.domain || senderDomain;
+      const domain = message.domain ?? senderDomain;
       if (!domain) return;
       const data = await getStorage();
       if (!data.deniedDomains.includes(domain)) {
@@ -210,16 +221,14 @@ async function handleMessage(message, sender) {
       data.approvedDomains = data.approvedDomains.filter(d => d !== domain);
       await browser.storage.local.set({
         approvedDomains: data.approvedDomains,
-        deniedDomains: data.deniedDomains
+        deniedDomains: data.deniedDomains,
       });
       await clearSiteData(domain);
       break;
     }
 
     case 'remove': {
-      // Remove domain from all lists (reset to unknown state)
-      const domain = message.domain;
-      if (!domain) return;
+      const { domain } = message;
       const data = await getStorage();
       data.approvedDomains = data.approvedDomains.filter(d => d !== domain);
       data.deniedDomains = data.deniedDomains.filter(d => d !== domain);
@@ -231,8 +240,8 @@ async function handleMessage(message, sender) {
 
     case 'passwordDetected': {
       const domain = senderDomain;
-      const tabId = sender.tab && sender.tab.id;
-      if (!domain || !tabId) return;
+      const tabId = sender.tab?.id;
+      if (!domain || tabId === undefined) return;
       const data = await getStorage();
       if (
         !data.approvedDomains.includes(domain) &&
@@ -247,10 +256,12 @@ async function handleMessage(message, sender) {
     default:
       break;
   }
+
+  return undefined;
 }
 
 browser.runtime.onMessage.addListener((message, sender) => {
-  return handleMessage(message, sender);
+  return handleMessage(message as BackgroundMessage, sender);
 });
 
 // ---------------------------------------------------------------------------
@@ -259,6 +270,8 @@ browser.runtime.onMessage.addListener((message, sender) => {
 
 browser.tabs.query({}).then(tabs => {
   for (const tab of tabs) {
-    if (tab.url) tabUrls.set(tab.id, tab.url);
+    if (tab.id !== undefined && tab.url) {
+      tabUrls.set(tab.id, tab.url);
+    }
   }
 });

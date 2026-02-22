@@ -1,4 +1,4 @@
-'use strict';
+import type { ShowPromptMessage, PromptReason } from './types.js';
 
 /**
  * Content script – handles:
@@ -13,25 +13,25 @@ let notificationShown = false;
 // Password detection
 // ---------------------------------------------------------------------------
 
-function onPasswordInput() {
+function onPasswordInput(): void {
   if (passwordDetected) return;
   passwordDetected = true;
   browser.runtime.sendMessage({ type: 'passwordDetected' });
 }
 
 // Attach to any password field already in the DOM
-document.querySelectorAll('input[type="password"]').forEach(el => {
+document.querySelectorAll<HTMLInputElement>('input[type="password"]').forEach(el => {
   el.addEventListener('focus', onPasswordInput, { once: true });
 });
 
 // Watch for dynamically added password fields
 const observer = new MutationObserver(mutations => {
   for (const mutation of mutations) {
-    for (const node of mutation.addedNodes) {
-      if (node.nodeType !== Node.ELEMENT_NODE) continue;
-      const fields = node.matches('input[type="password"]')
-        ? [node]
-        : Array.from(node.querySelectorAll('input[type="password"]'));
+    for (const node of Array.from(mutation.addedNodes)) {
+      if (!(node instanceof Element)) continue;
+      const fields: HTMLInputElement[] = node.matches('input[type="password"]')
+        ? [node as HTMLInputElement]
+        : Array.from(node.querySelectorAll<HTMLInputElement>('input[type="password"]'));
       fields.forEach(el => el.addEventListener('focus', onPasswordInput, { once: true }));
     }
   }
@@ -42,7 +42,7 @@ observer.observe(document.body, { childList: true, subtree: true });
 // Notification bar
 // ---------------------------------------------------------------------------
 
-function showNotificationBar(domain, reason) {
+function showNotificationBar(domain: string, reason: PromptReason): void {
   if (notificationShown || document.getElementById('smart-privacy-bar')) return;
   notificationShown = true;
 
@@ -68,17 +68,17 @@ function showNotificationBar(domain, reason) {
 
   document.body.prepend(bar);
 
-  document.getElementById('smart-privacy-approve').addEventListener('click', () => {
+  document.getElementById('smart-privacy-approve')!.addEventListener('click', () => {
     browser.runtime.sendMessage({ type: 'approve' });
     bar.remove();
   });
 
-  document.getElementById('smart-privacy-deny').addEventListener('click', () => {
+  document.getElementById('smart-privacy-deny')!.addEventListener('click', () => {
     browser.runtime.sendMessage({ type: 'deny' });
     bar.remove();
   });
 
-  document.getElementById('smart-privacy-dismiss').addEventListener('click', () => {
+  document.getElementById('smart-privacy-dismiss')!.addEventListener('click', () => {
     bar.remove();
   });
 }
@@ -88,7 +88,8 @@ function showNotificationBar(domain, reason) {
 // ---------------------------------------------------------------------------
 
 browser.runtime.onMessage.addListener(message => {
-  if (message.type === 'showPrompt') {
-    showNotificationBar(message.domain, message.reason);
+  const msg = message as ShowPromptMessage;
+  if (msg.type === 'showPrompt') {
+    showNotificationBar(msg.domain, msg.reason);
   }
 });
