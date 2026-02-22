@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Privacy – Settings</title>
+  <link rel="stylesheet" href="options.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="page-header">
+      <span class="logo">🔒</span>
+      <h1>Smart Privacy</h1>
+    </header>
+
+    <section class="card">
+      <h2>Add a domain</h2>
+      <p class="hint">Manually add a domain to the approve or deny list.</p>
+      <div class="add-row">
+        <input
+          id="add-input"
+          type="text"
+          placeholder="example.com"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button id="btn-add-approve" class="btn btn-approve">Approve</button>
+        <button id="btn-add-deny" class="btn btn-deny">Deny</button>
+      </div>
+      <div id="add-error" class="error-msg" hidden></div>
+    </section>
+
+    <section class="card">
+      <h2>Approved sites <span id="approved-count" class="count">0</span></h2>
+      <p class="hint">Cookies and site data are kept for these domains.</p>
+      <ul id="approved-list" class="domain-list"></ul>
+      <p id="approved-empty" class="empty-msg">No approved sites yet.</p>
+    </section>
+
+    <section class="card">
+      <h2>Denied sites <span id="denied-count" class="count">0</span></h2>
+      <p class="hint">Cookies and site data are cleared for these domains when you leave.</p>
+      <ul id="denied-list" class="domain-list"></ul>
+      <p id="denied-empty" class="empty-msg">No denied sites yet.</p>
+    </section>
+
+    <section class="card">
+      <h2>Settings</h2>
+      <label class="setting-row">
+        <span>Visit threshold before prompting</span>
+        <input id="visit-threshold" type="number" min="1" max="20" value="3" />
+      </label>
+      <p class="hint">Number of visits before you are asked whether to save cookies for a new site.</p>
+      <button id="btn-save-settings" class="btn btn-approve" style="margin-top:10px">Save</button>
+      <span id="settings-saved" class="saved-msg" hidden>Saved!</span>
+    </section>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

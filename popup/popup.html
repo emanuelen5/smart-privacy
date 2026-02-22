@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Smart Privacy</title>
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <div class="header">
+    <span class="logo">🔒</span>
+    <h1>Smart Privacy</h1>
+  </div>
+
+  <div class="domain-info">
+    <div class="domain-label">Current site</div>
+    <div id="domain-name" class="domain-name">—</div>
+    <div id="status-badge" class="status-badge unknown">Unknown</div>
+  </div>
+
+  <div class="actions" id="actions">
+    <button id="btn-approve" class="btn btn-approve">✓ Approve this site</button>
+    <button id="btn-deny" class="btn btn-deny">✕ Deny this site</button>
+    <button id="btn-remove" class="btn btn-remove" hidden>Remove from list</button>
+  </div>
+
+  <div class="footer">
+    <button id="open-options" class="link-btn">Manage approve list →</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
