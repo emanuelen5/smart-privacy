@@ -1,4 +1,5 @@
 import type { StorageData } from '../types.js';
+import { isValidDomain } from '../utils.js';
 
 async function getStorage(): Promise<StorageData> {
   const result = await browser.storage.local.get({
@@ -9,16 +10,6 @@ async function getStorage(): Promise<StorageData> {
     visitThreshold: 3,
   });
   return result as StorageData;
-}
-
-function isValidDomain(value: string): boolean {
-  const v = value.trim();
-  // Accept hostnames, IP addresses, and localhost
-  return (
-    /^(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$/.test(v) ||
-    /^(?:\d{1,3}\.){3}\d{1,3}$/.test(v) ||
-    v === 'localhost'
-  );
 }
 
 function getEl<T extends HTMLElement>(id: string): T {

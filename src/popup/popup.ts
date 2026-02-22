@@ -1,21 +1,9 @@
 import type { DomainStatus } from '../types.js';
+import { getDomain } from '../utils.js';
 
 async function getCurrentTab(): Promise<browser.tabs.Tab | undefined> {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   return tab;
-}
-
-function getDomain(url: string | null | undefined): string | null {
-  if (!url) return null;
-  try {
-    const parsed = new URL(url);
-    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
-      return parsed.hostname;
-    }
-  } catch {
-    // ignore
-  }
-  return null;
 }
 
 function getEl<T extends HTMLElement>(id: string): T {
