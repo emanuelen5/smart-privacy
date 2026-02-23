@@ -22,6 +22,16 @@ async function init(): Promise<void> {
   const btnDeny = getEl<HTMLButtonElement>('btn-deny');
   const btnRemove = getEl<HTMLButtonElement>('btn-remove');
 
+  getEl<HTMLButtonElement>('open-options').addEventListener('click', () => {
+    browser.runtime.openOptionsPage();
+    window.close();
+  });
+
+  getEl<HTMLButtonElement>('open-release-notes').addEventListener('click', () => {
+    browser.tabs.create({ url: browser.runtime.getURL('release-notes/release-notes.html') });
+    window.close();
+  });
+
   if (!domain) {
     domainEl.textContent = 'Not a web page';
     getEl<HTMLElement>('actions').hidden = true;
@@ -59,11 +69,6 @@ async function init(): Promise<void> {
 
   btnRemove.addEventListener('click', async () => {
     await browser.runtime.sendMessage({ type: 'remove', domain });
-    window.close();
-  });
-
-  getEl<HTMLButtonElement>('open-options').addEventListener('click', () => {
-    browser.runtime.openOptionsPage();
     window.close();
   });
 }
