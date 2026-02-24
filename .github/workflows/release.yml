@@ -14,6 +14,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate tag
+        run: .github/scripts/validate-tag.sh "$GITHUB_REF_NAME"
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -27,28 +30,26 @@ jobs:
         run: npm run build
 
       - name: Package extension
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-          zip -r "smart-privacy-${VERSION}.zip" \
-            manifest.json \
-            content.css \
-            icons/ \
-            popup/ \
-            options/ \
-            release-notes/ \
-            dist/
+        run: .github/scripts/package-extension.sh "$GITHUB_REF_NAME"
 
       - name: Extract release notes
         id: release_notes
         run: |
-          NOTES=$(awk '/^## \[Unreleased\]/{found=1; next} found && /^## \[/{exit} found{print}' CHANGELOG.md)
-          if [ -z "$(echo "$NOTES" | tr -d '[:space:]')" ]; then
-            echo "::error::No release notes found in the [Unreleased] section of CHANGELOG.md"
-            exit 1
-          fi
+          NOTES=$(.github/scripts/extract-release-notes.sh)
           echo "notes<<EOF" >> "$GITHUB_OUTPUT"
           echo "$NOTES" >> "$GITHUB_OUTPUT"
           echo "EOF" >> "$GITHUB_OUTPUT"
+
+      - name: Update CHANGELOG
+        run: .github/scripts/update-changelog.py "$GITHUB_REF_NAME"
+
+      - name: Commit updated CHANGELOG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md
+          git commit -m "Update CHANGELOG for ${GITHUB_REF_NAME} [skip ci]"
+          git push origin HEAD:main
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
