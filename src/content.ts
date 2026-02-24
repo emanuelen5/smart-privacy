@@ -49,36 +49,48 @@ function showNotificationBar(domain: string, reason: PromptReason): void {
   const bar = document.createElement('div');
   bar.id = 'smart-privacy-bar';
 
-  const reasonText =
-    reason === 'password'
-      ? `You entered a password on <strong>${domain}</strong>.`
-      : `You have visited <strong>${domain}</strong> multiple times.`;
+  const msgSpan = document.createElement('span');
+  msgSpan.className = 'smart-privacy-msg';
+  const titleStrong = document.createElement('strong');
+  titleStrong.textContent = 'Smart Privacy';
+  const domainStrong = document.createElement('strong');
+  domainStrong.textContent = domain;
+  const reasonFragment = document.createDocumentFragment();
+  if (reason === 'password') {
+    reasonFragment.append('You entered a password on ', domainStrong, '.');
+  } else {
+    reasonFragment.append('You have visited ', domainStrong, ' multiple times.');
+  }
+  msgSpan.append('🔒 ', titleStrong, ': ', reasonFragment, ' Do you want to save cookies for this site?');
 
-  bar.innerHTML = `
-    <span class="smart-privacy-msg">
-      🔒 <strong>Smart Privacy</strong>: ${reasonText}
-      Do you want to save cookies for this site?
-    </span>
-    <span class="smart-privacy-actions">
-      <button id="smart-privacy-approve">Approve</button>
-      <button id="smart-privacy-deny">Deny</button>
-      <button id="smart-privacy-dismiss" title="Dismiss">✕</button>
-    </span>
-  `;
+  const actionsSpan = document.createElement('span');
+  actionsSpan.className = 'smart-privacy-actions';
+  const approveBtn = document.createElement('button');
+  approveBtn.id = 'smart-privacy-approve';
+  approveBtn.textContent = 'Approve';
+  const denyBtn = document.createElement('button');
+  denyBtn.id = 'smart-privacy-deny';
+  denyBtn.textContent = 'Deny';
+  const dismissBtn = document.createElement('button');
+  dismissBtn.id = 'smart-privacy-dismiss';
+  dismissBtn.title = 'Dismiss';
+  dismissBtn.textContent = '✕';
+  actionsSpan.append(approveBtn, denyBtn, dismissBtn);
 
+  bar.append(msgSpan, actionsSpan);
   document.body.prepend(bar);
 
-  document.getElementById('smart-privacy-approve')!.addEventListener('click', () => {
+  approveBtn.addEventListener('click', () => {
     browser.runtime.sendMessage({ type: 'approve' });
     bar.remove();
   });
 
-  document.getElementById('smart-privacy-deny')!.addEventListener('click', () => {
+  denyBtn.addEventListener('click', () => {
     browser.runtime.sendMessage({ type: 'deny' });
     bar.remove();
   });
 
-  document.getElementById('smart-privacy-dismiss')!.addEventListener('click', () => {
+  dismissBtn.addEventListener('click', () => {
     bar.remove();
   });
 }

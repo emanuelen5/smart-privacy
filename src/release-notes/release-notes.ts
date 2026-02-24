@@ -9,5 +9,7 @@ marked.use({ renderer });
 
 const el = document.getElementById('changelog');
 if (el) {
-  el.innerHTML = marked.parse(changelogContent) as string;
+  const html = marked.parse(changelogContent) as string;
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  el.append(...Array.from(doc.body.childNodes));
 }

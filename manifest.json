@@ -3,6 +3,15 @@
   "name": "Smart Privacy",
   "version": "1.0.0",
   "description": "Automatically removes cookies and site data for sites not on your approve list. Prompts you when you visit a site repeatedly or enter a password.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "smart-privacy@emanuelen5",
+      "data_collection_permissions": {
+        "required": ["none"],
+        "optional": []
+      }
+    }
+  },
   "permissions": [
     "cookies",
     "tabs",

@@ -74,7 +74,7 @@ jobs:
 
       - name: Package extension for linting
         run: |
-          git ls-files | zip /tmp/extension.zip -@
+          git ls-files | grep -v '\.sh$' | zip /tmp/extension.zip -@
           zip -r /tmp/extension.zip dist/
 
       - name: Run addons-linter
