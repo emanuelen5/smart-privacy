@@ -54,6 +54,32 @@ jobs:
       - name: Run tests
         run: npm test
 
+  lint:
+    name: Lint (addons-linter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Package extension for linting
+        run: |
+          git ls-files | zip /tmp/extension.zip -@
+          zip -r /tmp/extension.zip dist/
+
+      - name: Run addons-linter
+        run: npx addons-linter /tmp/extension.zip
+
   e2e:
     name: E2E Tests
     runs-on: ubuntu-latest
