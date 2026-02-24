@@ -7,8 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.0] - 2026-02-24
-
 ### Added
 - Initial release of Smart Privacy extension ([#1](https://github.com/emanuelen5/smart-privacy/pull/1))
 - Automatically removes cookies and site data for sites not on the approve list
