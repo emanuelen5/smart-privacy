@@ -78,7 +78,7 @@ jobs:
           zip -r /tmp/extension.zip dist/
 
       - name: Run addons-linter
-        run: npx addons-linter /tmp/extension.zip
+        run: npx addons-linter --warnings-as-errors /tmp/extension.zip
 
   e2e:
     name: E2E Tests
