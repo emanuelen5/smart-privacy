@@ -78,11 +78,12 @@ jobs:
           zip -r /tmp/extension.zip dist/
 
       - name: Run addons-linter
+        id: run-linter
         run: npx addons-linter --warnings-as-errors -o json /tmp/extension.zip > /tmp/linter-output.json
 
       - name: Generate linter report
         if: always()
-        run: python3 .github/scripts/lint-addon.py /tmp/linter-output.json
+        run: python3 .github/scripts/format-linter-report.py /tmp/linter-output.json ${{ steps.run-linter.outcome }} >> $GITHUB_STEP_SUMMARY
 
   e2e:
     name: E2E Tests
