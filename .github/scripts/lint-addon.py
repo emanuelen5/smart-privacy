@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Run addons-linter, produce a readable console summary and write Markdown to GITHUB_STEP_SUMMARY."""
+"""Parse addons-linter JSON output, produce a readable console summary and write Markdown to GITHUB_STEP_SUMMARY."""
 import json
 import os
-import subprocess
 import sys
 
 
@@ -39,25 +38,17 @@ def make_markdown_table(items: list) -> str:
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: lint-addon.py <extension-zip-or-dir>", file=sys.stderr)
+    if len(sys.argv) != 2:
+        print("Usage: lint-addon.py <linter-output.json>", file=sys.stderr)
         sys.exit(1)
 
-    target = sys.argv[1:]
-    result = subprocess.run(
-        ["npx", "addons-linter", "--warnings-as-errors", "-o", "json"] + target,
-        capture_output=True,
-        text=True,
-    )
-
+    json_file = sys.argv[1]
     try:
-        data = json.loads(result.stdout)
-    except json.JSONDecodeError:
-        print("ERROR: Could not parse addons-linter output as JSON:", file=sys.stderr)
-        print(result.stdout)
-        if result.stderr:
-            print(result.stderr, file=sys.stderr)
-        sys.exit(result.returncode)
+        with open(json_file) as f:
+            data = json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        print(f"ERROR: Could not read addons-linter JSON output from {json_file!r}: {e}", file=sys.stderr)
+        sys.exit(1)
 
     summary = data.get("summary", {})
     errors = data.get("errors", [])
@@ -82,12 +73,13 @@ def main():
     )
 
     # === Markdown for GITHUB_STEP_SUMMARY ===
-    status_icon = "✅" if result.returncode == 0 else "❌"
+    has_failures = summary.get("errors", 0) > 0 or summary.get("warnings", 0) > 0
+    status_icon = "❌" if has_failures else "✅"
     md_lines = [
         f"## {status_icon} addons-linter report",
         "",
-        f"| Errors | Warnings | Notices |",
-        f"|--------|----------|---------|",
+        "| Errors | Warnings | Notices |",
+        "|--------|----------|---------|",
         f"| {summary.get('errors', 0)} | {summary.get('warnings', 0)} | {summary.get('notices', 0)} |",
     ]
     for title, items in sections:
@@ -104,7 +96,7 @@ def main():
         except OSError as e:
             print(f"WARNING: Could not write to GITHUB_STEP_SUMMARY: {e}", file=sys.stderr)
 
-    sys.exit(result.returncode)
+    sys.exit(1 if has_failures else 0)
 
 
 if __name__ == "__main__":
