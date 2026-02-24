@@ -5,6 +5,7 @@ const entryPoints = [
   'src/content.ts',
   'src/popup/popup.ts',
   'src/options/options.ts',
+  'src/release-notes/release-notes.ts',
 ];
 
 await build({
@@ -16,4 +17,5 @@ await build({
   format: 'iife',
   sourcemap: false,
   logLevel: 'info',
+  loader: { '.md': 'text' },
 });

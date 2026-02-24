@@ -125,7 +125,10 @@ body {
 
 .footer {
   padding: 10px 16px;
-  text-align: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
 }
 
 .footer .link-btn {
