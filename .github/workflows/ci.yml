@@ -78,9 +78,10 @@ jobs:
           zip -r /tmp/extension.zip dist/
 
       - name: Run addons-linter
-        run: npx addons-linter --warnings-as-errors -o json /tmp/extension.zip > /tmp/linter-output.json || true
+        run: npx addons-linter --warnings-as-errors -o json /tmp/extension.zip > /tmp/linter-output.json
 
       - name: Generate linter report
+        if: always()
         run: python3 .github/scripts/lint-addon.py /tmp/linter-output.json
 
   e2e:
