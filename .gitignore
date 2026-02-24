@@ -12,4 +12,8 @@ node_modules/
 *.swp
 *.swo
 
+# Playwright test results
+test-results/
+playwright-report/
+
 # npm lock file (keep package-lock.json for reproducible installs)
