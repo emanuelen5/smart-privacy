@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Smart Privacy",
   "version": "1.0.0",
   "description": "Automatically removes cookies and site data for sites not on your approve list. Prompts you when you visit a site repeatedly or enter a password.",
@@ -16,11 +16,13 @@
     "cookies",
     "tabs",
     "storage",
-    "browsingData",
+    "browsingData"
+  ],
+  "host_permissions": [
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["dist/background.js"]
+    "service_worker": "dist/background.js"
   },
   "content_scripts": [
     {
@@ -30,7 +32,7 @@
       "run_at": "document_idle"
     }
   ],
-  "browser_action": {
+  "action": {
     "default_popup": "popup/popup.html",
     "default_title": "Smart Privacy",
     "default_icon": {
