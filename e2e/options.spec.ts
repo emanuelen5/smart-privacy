@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 import { EXTENSION_ROOT, DEFAULT_STORE, setupBrowserMock } from './helpers';
 
-const optionsUrl = `file://${path.join(EXTENSION_ROOT, 'options', 'options.html')}`;
+const optionsUrl = `file://${path.join(EXTENSION_ROOT, 'static', 'options', 'options.html')}`;
 
 test.describe('Options page', () => {
   test('has the correct page title', async ({ page }) => {
