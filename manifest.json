@@ -26,24 +26,24 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["dist/content.js"],
-      "css": ["content.css"],
+      "css": ["static/content.css"],
       "run_at": "document_idle"
     }
   ],
   "browser_action": {
-    "default_popup": "popup/popup.html",
+    "default_popup": "static/popup/popup.html",
     "default_title": "Smart Privacy",
     "default_icon": {
-      "48": "icons/icon.svg",
-      "96": "icons/icon.svg"
+      "48": "static/icons/icon.svg",
+      "96": "static/icons/icon.svg"
     }
   },
   "options_ui": {
-    "page": "options/options.html",
+    "page": "static/options/options.html",
     "open_in_tab": true
   },
   "icons": {
-    "48": "icons/icon.svg",
-    "96": "icons/icon.svg"
+    "48": "static/icons/icon.svg",
+    "96": "static/icons/icon.svg"
   }
 }
