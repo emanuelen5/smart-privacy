@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 import path from 'path';
 import { EXTENSION_ROOT, DEFAULT_STORE, setupBrowserMock } from './helpers';
 
-const popupUrl = `file://${path.join(EXTENSION_ROOT, 'popup', 'popup.html')}`;
+const popupUrl = `file://${path.join(EXTENSION_ROOT, 'static', 'popup', 'popup.html')}`;
 
 test.describe('Popup', () => {
   test('shows "Not a web page" when no tab URL is available', async ({ page }) => {
