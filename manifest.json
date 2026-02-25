@@ -10,7 +10,8 @@
         "required": ["none"],
         "optional": []
       }
-    }
+    },
+    "gecko_android": {}
   },
   "permissions": [
     "cookies",

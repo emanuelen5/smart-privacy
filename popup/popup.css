@@ -10,7 +10,9 @@
 }
 
 body {
-  width: 280px;
+  min-width: 280px;
+  max-width: 400px;
+  width: 100%;
   font: 14px/1.5 system-ui, sans-serif;
   background: #1a1a2e;
   color: #e0e0e0;
