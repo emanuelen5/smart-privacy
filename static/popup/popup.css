@@ -151,3 +151,7 @@ body {
 .footer .link-btn:hover {
   text-decoration: underline;
 }
+
+.footer .sponsor-btn {
+  color: #db61a2;
+}

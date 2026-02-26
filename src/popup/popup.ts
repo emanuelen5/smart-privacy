@@ -32,6 +32,11 @@ async function init(): Promise<void> {
     window.close();
   });
 
+  getEl<HTMLButtonElement>('open-sponsor').addEventListener('click', () => {
+    browser.tabs.create({ url: browser.runtime.getURL('sponsor/sponsor.html') });
+    window.close();
+  });
+
   if (!domain) {
     domainEl.textContent = 'Not a web page';
     getEl<HTMLElement>('actions').hidden = true;
