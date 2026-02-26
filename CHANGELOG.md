@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Sponsor page that kindly asks for donations, accessible from the popup and shown automatically on first install ([#2](https://github.com/emanuelen5/smart-privacy/pull/2))
+
 ## [1.0.0] - 2026-02-24
 
 ### Added

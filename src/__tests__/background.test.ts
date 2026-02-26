@@ -43,6 +43,7 @@ function makeBrowserMock(initialStorage: StorageStore = {}) {
       },
       runtime: {
         onMessage: noopListener,
+        onInstalled: noopListener,
       },
       storage: {
         local: { get: storageLocalGet, set: storageLocalSet },

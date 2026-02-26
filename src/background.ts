@@ -263,3 +263,13 @@ browser.tabs.query({}).then(tabs => {
     }
   }
 });
+
+// ---------------------------------------------------------------------------
+// First install: open the sponsor page to say thank you / ask for support
+// ---------------------------------------------------------------------------
+
+browser.runtime.onInstalled.addListener(details => {
+  if (details.reason === 'install') {
+    browser.tabs.create({ url: browser.runtime.getURL('sponsor/sponsor.html') });
+  }
+});
