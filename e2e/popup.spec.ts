@@ -65,4 +65,12 @@ test.describe('Popup', () => {
 
     await expect(page.locator('#open-options')).toBeVisible();
   });
+
+  test('"Support" button is present in the footer', async ({ page }) => {
+    await setupBrowserMock(page, DEFAULT_STORE, 'https://example.com/');
+    await page.goto(popupUrl);
+
+    await expect(page.locator('#open-sponsor')).toBeVisible();
+    await expect(page.locator('#open-sponsor')).toContainText('Support');
+  });
 });
