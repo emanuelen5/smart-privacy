@@ -28,7 +28,7 @@ async function init(): Promise<void> {
   });
 
   getEl<HTMLButtonElement>('open-release-notes').addEventListener('click', () => {
-    browser.tabs.create({ url: browser.runtime.getURL('release-notes/release-notes.html') });
+    browser.tabs.create({ url: browser.runtime.getURL('static/release-notes/release-notes.html') });
     window.close();
   });
 
