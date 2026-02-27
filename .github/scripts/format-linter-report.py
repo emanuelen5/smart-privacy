@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Parse addons-linter JSON output and print a Markdown report to stdout."""
+
 import json
 import sys
 
@@ -7,7 +8,10 @@ SECTION_EMOJIS = {"Errors": "🚨", "Warnings": "⚠️", "Notices": "📝"}
 
 
 def make_markdown_table(items: list) -> str:
-    rows = ["| Code | Message | File | Description |", "|------|---------|------|-------------|"]
+    rows = [
+        "| Code | Message | File | Description |",
+        "|------|---------|------|-------------|",
+    ]
     for item in items:
         code = f"`{item.get('code', '')}`"
         message = item.get("message", "").replace("|", "\\|").replace("\n", " ")
@@ -24,7 +28,10 @@ def make_markdown_table(items: list) -> str:
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: format-linter-report.py <linter-output.json> [success|failure]", file=sys.stderr)
+        print(
+            "Usage: format-linter-report.py <linter-output.json> [success|failure]",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     json_file = sys.argv[1]
@@ -34,7 +41,10 @@ def main():
         with open(json_file) as f:
             data = json.load(f)
     except (OSError, json.JSONDecodeError) as e:
-        print(f"ERROR: Could not read addons-linter JSON output from {json_file!r}: {e}", file=sys.stderr)
+        print(
+            f"ERROR: Could not read addons-linter JSON output from {json_file!r}: {e}",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     summary = data.get("summary", {})
@@ -63,4 +73,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

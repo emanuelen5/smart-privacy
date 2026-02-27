@@ -15,7 +15,10 @@ def update_changelog(tag: str, changelog_path: str = "CHANGELOG.md") -> None:
         content = f.read()
 
     if not re.search(r"^## \[Unreleased\]", content, re.MULTILINE):
-        print(f"error: [Unreleased] section not found in {changelog_path}", file=sys.stderr)
+        print(
+            f"error: [Unreleased] section not found in {changelog_path}",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     # Replace everything from "<!-- releases -->" through "<!-- released -->"
