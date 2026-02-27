@@ -1,7 +1,8 @@
 import { Page } from '@playwright/test';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
-export const EXTENSION_ROOT = path.resolve(__dirname, '..');
+export const EXTENSION_ROOT = path.resolve(fileURLToPath(import.meta.url), '..', '..');
 
 export interface MockStore {
   approvedDomains: string[];
