@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 <!-- releases -->
 
+### Fixed
+- Fixed `npm test` failing with `ERR_REQUIRE_ESM` by setting `"type": "module"` in package.json for Vitest v4 ESM compatibility ([#14](https://github.com/emanuelen5/smart-privacy/pull/14))
+
 ### Added
 - Sponsor page that kindly asks for donations, accessible from the popup and shown automatically on first install ([#12](https://github.com/emanuelen5/smart-privacy/pull/12))
 
