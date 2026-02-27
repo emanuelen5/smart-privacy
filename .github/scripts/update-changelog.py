@@ -18,8 +18,11 @@ def update_changelog(tag: str, changelog_path: str = "CHANGELOG.md") -> None:
         print(f"error: [Unreleased] section not found in {changelog_path}", file=sys.stderr)
         sys.exit(1)
 
-    replacement = f"## [Unreleased]\n\n## [{version}] - {release_date}"
-    content = re.sub(r"^## \[Unreleased\]", replacement, content, count=1, flags=re.MULTILINE)
+    replacement = f"## [Unreleased]\n\n<!-- released -->\n\n## [{version}] - {release_date}"
+    content = re.sub(r"^## \[Unreleased\].*?(?=\n<!-- released -->)", replacement, content, count=1, flags=re.MULTILINE | re.DOTALL)
+
+    # Remove the old <!-- released --> marker (now duplicated after the replacement)
+    content = content.replace(f"{replacement}\n\n<!-- released -->", replacement, 1)
 
     with open(changelog_path, "w") as f:
         f.write(content)
