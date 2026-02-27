@@ -18,11 +18,28 @@ def update_changelog(tag: str, changelog_path: str = "CHANGELOG.md") -> None:
         print(f"error: [Unreleased] section not found in {changelog_path}", file=sys.stderr)
         sys.exit(1)
 
-    replacement = f"## [Unreleased]\n\n<!-- released -->\n\n## [{version}] - {release_date}"
-    content = re.sub(r"^## \[Unreleased\].*?(?=\n<!-- released -->)", replacement, content, count=1, flags=re.MULTILINE | re.DOTALL)
+    # Replace everything from "<!-- releases -->" through "<!-- released -->"
+    # with a fresh empty marker pair and the new version heading.
+    # The captured group contains the unreleased content which moves
+    # under the new version heading.
+    def _build_replacement(m: re.Match[str]) -> str:
+        unreleased_content = m.group(1).strip()
+        parts = [
+            f"<!-- releases -->\n\n",
+            f"<!-- released -->\n\n",
+            f"## [{version}] - {release_date}",
+        ]
+        if unreleased_content:
+            parts.append(f"\n\n{unreleased_content}")
+        return "".join(parts)
 
-    # Remove the old <!-- released --> marker (now duplicated after the replacement)
-    content = content.replace(f"{replacement}\n\n<!-- released -->", replacement, 1)
+    content = re.sub(
+        r"<!-- releases -->(.*?)<!-- released -->",
+        _build_replacement,
+        content,
+        count=1,
+        flags=re.DOTALL,
+    )
 
     with open(changelog_path, "w") as f:
         f.write(content)
