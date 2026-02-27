@@ -33,7 +33,7 @@ async function init(): Promise<void> {
   });
 
   getEl<HTMLButtonElement>('open-sponsor').addEventListener('click', () => {
-    browser.tabs.create({ url: browser.runtime.getURL('sponsor/sponsor.html') });
+    browser.tabs.create({ url: browser.runtime.getURL('static/sponsor/sponsor.html') });
     window.close();
   });
 
