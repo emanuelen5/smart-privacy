@@ -1,8 +1,8 @@
 import type {
-  StorageData,
-  PromptReason,
   BackgroundMessage,
+  PromptReason,
   ShowPromptMessage,
+  StorageData,
 } from './types.js';
 import { getDomain } from './utils.js';
 
